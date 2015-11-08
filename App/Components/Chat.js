@@ -156,7 +156,7 @@ class Chat extends React.Component{
 
   render() {
     return (
-        <View style={styles.mainContainer}>
+        //<View style={styles.mainContainer}>
             <View style={styles.bgImageWrapper}>
               <Image source={{uri: 'https://wallpaperscraft.com/image/glare_light_glitter_backgrounds_15928_3840x2160.jpg'}} style={styles.backgroundImage}/>
                 <ListView
@@ -164,7 +164,7 @@ class Chat extends React.Component{
                   renderRow={this.renderRow.bind(this)} />
                 {this.footer()}
             </View>
-        </View>
+        //</View>
     )
   }
   renderRow(rowData) {
@@ -173,12 +173,9 @@ class Chat extends React.Component{
       // If the rowData.sender is the relater, render to the left
       // If the rowData.sender is the user, render to the right
     return (
-      <View style={styles.rowContainer}>
         <View style={styles.row}>
           <Text style={styles.messageText}>{rowData.text}</Text>
         </View>
-        <View style={styles.separator}/>
-      </View>
     )
   }
 }
@@ -241,9 +238,10 @@ Chat.propTypes = {
       color: '#48BBEC'
     },
     row: {
-      flexDirection: 'row',
+      flex: 0,
+      //flexDirection: 'row',
       padding: 12,
-      height: 44
+      //height: 44
     },
     separator: {
       height: 1,
