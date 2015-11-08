@@ -1,0 +1,13 @@
+{
+  "name": "RelateChat",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "firebase": "^2.3.1",
+    "re-base": "^1.2.2",
+    "react-native": "^0.13.2"
+  }
+}
