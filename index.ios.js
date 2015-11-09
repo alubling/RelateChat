@@ -6,6 +6,7 @@
 
 var React = require('react-native');
 var Main = require('./App/Components/Main.js');
+var Splash = require('./App/Components/Splash.js');
 
 var {
   AppRegistry,
@@ -21,9 +22,16 @@ class RelateChat extends React.Component{
       <NavigatorIOS
         style={styles.container}
         initialRoute={{
-        title: 'Relate',
-        component: Main,
-      }} />
+          title: 'Relate',
+          component: Splash,
+        }}
+        //navigationBarHidden={true}
+        //translucent={true}
+        //barTintColor='#33CCCC'
+        //titleTextColor='white'
+        //tintColor='white'
+        //shadowHidden={true}
+        />
     );
   }
 };

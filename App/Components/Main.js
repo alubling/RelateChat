@@ -108,7 +108,7 @@ class Main extends React.Component{
                   messages: data
                 }
               });
-              
+
               // also clear the loader, error, and username field
               this.setState({
                 isLoading: false,
