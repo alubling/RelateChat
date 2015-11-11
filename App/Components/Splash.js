@@ -2,8 +2,8 @@ import React from 'react-native';
 import api from '../Utils/api.js';
 import Select from './Select';
 import Chat from './Chat';
-import Signup from './Signup';
-import Login from './Login';
+import Signup from './signup';
+import Login from './login';
 
 var {
   View,
