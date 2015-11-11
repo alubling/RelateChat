@@ -1,6 +1,7 @@
 var React = require('react-native');
 var api = require('../Utils/api');
-var Messages = require('./Messages');
+//var Messages = require('./Messages');
+var Chat = require('./Chat');
 
 var {
   View,
@@ -25,18 +26,45 @@ class Select extends React.Component{
   pickRelater(relater){
     console.log("this is the relater that we just clicked on: ", relater);
     var user = this.props.userInfo;
+    var uid = this.props.uid;
     console.log("and we want to attach them to this user: ", user);
-    api.setRelater(user, relater)
+    api.setRelater(uid, relater)
       .then((data) => {
-        this.props.navigator.push({
-          component: Messages,
-          title: 'Messages',
-          passProps: {
-            user: data // will the user have the relater here yet?
-          }
+        var myUser = data; // grabbing the user that came back AFTER setting the relater
+        api.getMessages(uid)
+          .then((messagesData) => {
+            if (!messagesData) {
+              messagesData = {};
+            }
+            this.props.navigator.push({
+              component: Chat, // changing to Chat from Messages
+              title: `Chatting with ${myUser.relater}`, // changing to Chat from Messages
+              passProps: {
+                user: myUser,
+                messages: messagesData,
+                uid: uid
+
+            }
+          })
         });
       });
   }
+  // old pickRelater (before auth)
+  // pickRelater(relater){
+  //   console.log("this is the relater that we just clicked on: ", relater);
+  //   var user = this.props.userInfo;
+  //   console.log("and we want to attach them to this user: ", user);
+  //   api.setRelater(user, relater)
+  //     .then((data) => {
+  //       this.props.navigator.push({
+  //         component: Messages,
+  //         title: 'Messages',
+  //         passProps: {
+  //           user: data // will the user have the relater here yet?
+  //         }
+  //       });
+  //     });
+  // }
   // what gets returned in renderRow will be the ui for each item in the list
   renderRow(rowData){
     console.log("this is the row data: ", rowData);
@@ -72,7 +100,8 @@ class Select extends React.Component{
 
 Select.propTypes = {
   userInfo: React.PropTypes.object.isRequired,
-  relaters: React.PropTypes.object.isRequired
+  relaters: React.PropTypes.object.isRequired,
+  uid: React.PropTypes.string.isRequired
 }
 
   var styles = StyleSheet.create({

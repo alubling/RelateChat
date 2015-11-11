@@ -7,6 +7,7 @@ import Chat from './Chat';
 import Rebase from 're-base';
 
 var base = Rebase.createClass('https://relate-chat.firebaseio.com/');
+var ref = new Firebase('https://relate-chat.firebaseio.com');
 
 var {
   View,
@@ -43,61 +44,99 @@ class Login extends React.Component{
     this.setState({
       isLoading: true
     });
-    console.log('SUBMIT', this.state.username);
+    console.log('SUBMIT', this.state.name);
 
-    // fetch user if they exist
-    api.getUser(this.state.username)
-      .then((res) => {
-        // if the user is not found, create a new user and reset the loader. Then get the relaters and pass them AND navigate to Select screen
-        if (!res) {
-          api.createUser(this.state.username)
-            .then((user) => {
-              var myUser = user;
-              api.getRelaters()
-                .then((relaters) => {
-                  this.props.navigator.push({
-                    title: "Select a Relater",
-                    component: Select,
-                    passProps: {
-                      userInfo: myUser,
-                      relaters: relaters
-                    }
-                  });
-                  // also clear the loader, error, and username field
-                  this.setState({
-                    isLoading: false,
-                    error: false,
-                    username: ''
-                  })
+    // try to login user with email and password
+    ref.authWithPassword({
+      email    : this.state.email,
+      password : this.state.password
+    }, function(error, authData) {
+      if (error) {
+        console.log("Login Failed!", error);
+      } else {
+        console.log("Authenticated successfully with payload:", authData);
+        // Write authData (or just the id) to local storage
+        AsyncStorage.setItem("relateChatKey", authData);
+        this.setState({"authData": authData});
+        // Use authData to get the user, get their messages, and navigate directly to the Messages screen
+        api.getUser(this.state.authData.uid)
+          .then((data) => {
+            var user = data;
+            api.getMessages(user.email)
+              .then((messages) => {
+                this.props.navigator.push({
+                  title: `Chat with ${user.relater}`,
+                  component: Chat,
+                  passProps: {
+                    userInfo: user,
+                    messages: messages
+                  }
+                });
+                // clear the loader, error, and name fields
+                this.setState({
+                  isLoading: false,
+                  error: false,
+                  email: '',
+                  password: ''
                 })
-            })
-        } else {
-
-          // if the user is found, we need to authenticate here with touch id, and THEN reroute to the messages screen passing through the user object and their data
-          var userInfo = res;
-          console.log("this is the magic userInfo that we're passing: ", userInfo);
-          api.getMessages(userInfo.handle)
-            .then((data) => {
-              console.log("this should be the fucking data:", data);
-
-              this.props.navigator.push({
-                title: `Chatting with ${userInfo.relater}`,
-                component: Chat,
-                passProps: {
-                  user: userInfo,
-                  messages: data
-                }
-              });
-
-              // also clear the loader, error, and username field
-              this.setState({
-                isLoading: false,
-                error: false,
-                username: ''
               })
-            })
-        }
-      })
+          })
+      }
+    })
+
+    // // fetch user if they exist
+    // api.getUser(this.state.username)
+    //   .then((res) => {
+    //     // if the user is not found, create a new user and reset the loader. Then get the relaters and pass them AND navigate to Select screen
+    //     if (!res) {
+    //       api.createUser(this.state.username)
+    //         .then((user) => {
+    //           var myUser = user;
+    //           api.getRelaters()
+    //             .then((relaters) => {
+    //               this.props.navigator.push({
+    //                 title: "Select a Relater",
+    //                 component: Select,
+    //                 passProps: {
+    //                   userInfo: myUser,
+    //                   relaters: relaters
+    //                 }
+    //               });
+    //               // also clear the loader, error, and username field
+    //               this.setState({
+    //                 isLoading: false,
+    //                 error: false,
+    //                 username: ''
+    //               })
+    //             })
+    //         })
+    //     } else {
+    //
+    //       // if the user is found, we need to authenticate here with touch id, and THEN reroute to the messages screen passing through the user object and their data
+    //       var userInfo = res;
+    //       console.log("this is the magic userInfo that we're passing: ", userInfo);
+    //       api.getMessages(userInfo.handle)
+    //         .then((data) => {
+    //           console.log("this should be the fucking data:", data);
+    //
+    //           this.props.navigator.push({
+    //             title: `Chatting with ${userInfo.relater}`,
+    //             component: Chat,
+    //             passProps: {
+    //               user: userInfo,
+    //               messages: data
+    //             }
+    //           });
+    //
+    //           // also clear the loader, error, and username field
+    //           this.setState({
+    //             isLoading: false,
+    //             error: false,
+    //             username: ''
+    //           })
+    //         })
+    //     }
+    //   })
   }
   render() {
     return (

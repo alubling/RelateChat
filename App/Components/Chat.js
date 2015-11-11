@@ -44,7 +44,7 @@ class Chat extends React.Component{
 
   }
   init() {
-    this.ref = base.bindToState(`messages/${this.props.user.handle}`, {
+    this.ref = base.bindToState(`messages/${this.props.uid}`, { // changing this.props.user.handle to uid
       context: this,
       asArray: true,
       state: 'messages'
@@ -86,17 +86,19 @@ class Chat extends React.Component{
     this.setState({
       newMessage: ''
     })
-    var username = this.props.user.handle;
+    var uid = this.props.uid;
+    //var username = this.props.user.handle;
+    var name = this.props.user.name;
     var relater = this.props.user.relater;
     var timestamp = new Date();
-    console.log("adding a message for: ", username, "which goes to:", relater);
+    console.log("adding a message for: ", name, "which goes to:", relater);
 
     // api call to create a message, then get the new messages list
-    api.addMessage(relater, username, message, timestamp)
+    api.addMessage(relater, name, message, timestamp, uid) // taking out username and changing to just name
       .then((key) => {
         console.log("just added a message, this should be its key:", key);
         console.log("just check the this context for getting messages again:", this);
-        base.fetch(`messages/${username}`, {
+        base.fetch(`messages/${uid}`, { // changing this from username to uid
               context: this,
               asArray: true,
               then(data) {
@@ -158,7 +160,7 @@ class Chat extends React.Component{
     return (
         //<View style={styles.mainContainer}>
             <View style={styles.bgImageWrapper}>
-              <Image source={{uri: 'https://wallpaperscraft.com/image/glare_light_glitter_backgrounds_15928_3840x2160.jpg'}} style={styles.backgroundImage}/>
+              <Image source={require('./Background.png')} style={styles.backgroundImage}/>
                 <ListView
                   dataSource={this.state.dataSource}
                   renderRow={this.renderRow.bind(this)} />
@@ -182,13 +184,14 @@ class Chat extends React.Component{
 
 Chat.propTypes = {
   user: React.PropTypes.object.isRequired,
-  messages: React.PropTypes.object.isRequired
+  //messages: React.PropTypes.object.isRequired,
+  uid: React.PropTypes.string.isRequired
 }
 
   var styles = StyleSheet.create({
     backgroundImage: {
       flex: 1,
-      flexDirection: 'column',
+      //flexDirection: 'column',
       resizeMode: 'cover' // or 'stretch'
     },
     bgImageWrapper: {

@@ -16,8 +16,8 @@ class Messages extends React.Component{
   constructor(props){
     super(props);
     var mainRef = new Firebase('https://relate-chat.firebaseio.com');
-    var username = this.props.user.handle;
-    this.messagesRef = mainRef.child(`messages/${username}`);
+    // var username = this.props.user.handle;
+    this.messagesRef = mainRef.child(`messages/${this.props.uid}`); // changing this binding from username to uid
     //this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1 !== row2});
     this.state = {
       //messageSource: this.ds.cloneWithRows(this.props.conversations.key()),
@@ -30,7 +30,7 @@ class Messages extends React.Component{
   componentWillMount() {
     console.log("Messages will mount!");
     this.messagesRef.on('child_added', (dataSnapshot) => {
-      console.log(dataSnapshot);
+      console.log("dataSnapshot is", dataSnapshot);
       this.messages.push({id: dataSnapshot.key(), messageObj: dataSnapshot.val() });
       this.setState({
         messageSource: this.state.messageSource.cloneWithRows(this.messages)
@@ -45,7 +45,7 @@ class Messages extends React.Component{
       this.messagesRef.push({
         message: this.state.newMessage,
         receiver: this.props.user.relater,
-        sender: this.props.user.handle,
+        sender: this.props.user.name, // this used to be .handle but that no longer exists so lets use first name which we can use with messages
         timestamp: new Date()
       });
       this.setState({
@@ -86,6 +86,7 @@ class Messages extends React.Component{
 
 Messages.propTypes = {
   user: React.PropTypes.object.isRequired,
+  uid: React.PropTypes.string.isRequired
 }
 
   var styles = StyleSheet.create({
