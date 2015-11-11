@@ -6,6 +6,7 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "dimensions": "^0.1.0",
     "firebase": "^2.3.1",
     "re-base": "^1.2.2",
     "react-native": "^0.13.2"
