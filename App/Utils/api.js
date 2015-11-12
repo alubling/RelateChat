@@ -29,7 +29,7 @@ var api = {
     var url = `https://relate-chat.firebaseio.com/messages/${uid}.json`;
     return fetch(url)
       .then((res) => {
-        console.log("these should be the messages: ", res);
+        console.log("these should be the messages before json(): ", res);
         return res.json();
       });
   },
@@ -70,14 +70,14 @@ var api = {
     return fetch(url, { method: 'post' })
       .then((res) => { return res.json(); });
   },
-  addMessage(relater, name, message, timestamp, uid) { // changing from username to name, also adding uid
+  addMessage(relater, user, message, timestamp, uid) { // changing from username to user, also adding uid
     //username = username.toLowerCase().trim();
     var url = `https://relate-chat.firebaseio.com/messages/${uid}.json`; // changing from username to uid
     return fetch(url, {
       method: 'post',
       body: JSON.stringify({
         receiver: relater,
-        sender: name, // changing from username to name
+        sender: user, // changing from username to user
         text: message,
         timestamp: timestamp
       })

@@ -5,6 +5,7 @@ import Messages from './Messages';
 import Test from './Test';
 import Chat from './Chat';
 import Rebase from 're-base';
+import Firebase from 'firebase';
 
 var base = Rebase.createClass('https://relate-chat.firebaseio.com/');
 var ref = new Firebase('https://relate-chat.firebaseio.com');
@@ -14,6 +15,7 @@ var {
   Text,
   StyleSheet,
   TextInput,
+  AsyncStorage,
   TouchableHighlight,
   ActivityIndicatorIOS
 } = React;
@@ -40,11 +42,12 @@ class Login extends React.Component{
     });
   }
   handleSubmit() {
+    var that = this;
     // update spinner
     this.setState({
       isLoading: true
     });
-    console.log('SUBMIT', this.state.name);
+    console.log('SUBMIT', this.state.email);
 
     // try to login user with email and password
     ref.authWithPassword({
@@ -56,24 +59,31 @@ class Login extends React.Component{
       } else {
         console.log("Authenticated successfully with payload:", authData);
         // Write authData (or just the id) to local storage
-        AsyncStorage.setItem("relateChatKey", authData);
-        this.setState({"authData": authData});
+        AsyncStorage.setItem("relateChatKey", authData.uid);
+        //this.setState({"authData": authData});
         // Use authData to get the user, get their messages, and navigate directly to the Messages screen
-        api.getUser(this.state.authData.uid)
+        var uid = authData.uid;
+        api.getUser(uid)
           .then((data) => {
+            console.log("logged in and did a get on this user:", data);
             var user = data;
-            api.getMessages(user.email)
-              .then((messages) => {
-                this.props.navigator.push({
+            api.getMessages(uid)
+              .then((messagesData) => {
+                console.log("this is what messagesData will be set to in login:", messagesData);
+                if (!messagesData) {
+                  messagesData = {};
+                }
+                that.props.navigator.push({
                   title: `Chat with ${user.relater}`,
                   component: Chat,
                   passProps: {
-                    userInfo: user,
-                    messages: messages
+                    user: user,
+                    messages: messagesData,
+                    uid: uid
                   }
                 });
                 // clear the loader, error, and name fields
-                this.setState({
+                that.setState({
                   isLoading: false,
                   error: false,
                   email: '',
