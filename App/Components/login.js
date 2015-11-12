@@ -2,6 +2,7 @@ import React from 'react-native';
 import api from '../Utils/api.js';
 import Select from './Select';
 import Messages from './Messages';
+import Splash from './Splash';
 import Test from './Test';
 import Chat from './Chat';
 import Rebase from 're-base';
@@ -16,6 +17,7 @@ var {
   StyleSheet,
   TextInput,
   AsyncStorage,
+  LayoutAnimation,
   TouchableHighlight,
   ActivityIndicatorIOS
 } = React;
@@ -41,6 +43,28 @@ class Login extends React.Component{
       password: event.nativeEvent.text
     });
   }
+  handleLogout() {
+    // Logout means make sure the user's id is there, then remove it from local storage
+    AsyncStorage.getItem("relateChatKey").then((value) => {
+      console.log("found a key!", value);
+    }).then(() => {
+      AsyncStorage.removeItem("relateChatKey").then((value) => {
+        console.log("removed the key, but what is this value?", value);
+      })
+    })
+    // then try to get back to the login or splash screen
+    // this.props.navigator.replace({
+    //   title: "Relate",
+    //   component: Splash
+    // });
+    this.props.navigator.pop(); // used this instead of .replace because that doesn't reset the nav bar
+  }
+  // replaceRoute() {
+  //   this.props.navigator.replace({
+  //     title: "Relate",
+  //     component: Splash
+  //   })
+  // }
   handleSubmit() {
     var that = this;
     // update spinner
@@ -74,8 +98,10 @@ class Login extends React.Component{
                   messagesData = {};
                 }
                 that.props.navigator.push({
-                  title: `Chat with ${user.relater}`,
+                  title: `Chat with ${user.relater.name}`,
                   component: Chat,
+                  rightButtonTitle: 'Logout',
+                  onRightButtonPress: () => that.handleLogout(),// () => that.props.navigator.popToTop(),
                   passProps: {
                     user: user,
                     messages: messagesData,

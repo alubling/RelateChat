@@ -82,7 +82,10 @@ var api = {
         timestamp: timestamp
       })
     })
-      .then((res) => { return res.json(); });
+      .then((res) => {
+        console.log("checking the response:", res );
+        return res.json();
+      });
   },
   createUser(uid, email, firstname) {
     console.log("lets create the user: ", firstname);

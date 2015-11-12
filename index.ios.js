@@ -1,7 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
 'use strict';
 
 var React = require('react-native');
@@ -34,7 +30,6 @@ var {
 // }).done();
 var whichRoute;
 
-
 class RelateChat extends React.Component{
   constructor(props){
     super(props);
@@ -49,7 +44,37 @@ class RelateChat extends React.Component{
   //   var nonAuthedRoute = {title: 'Relate', component: Splash}, loaded: true }
   //   setTimeout();
   // }
+  handleLogout() {
+    // Logout means make sure the user's id is there, then remove it from local storage
+    AsyncStorage.getItem("relateChatKey").then((value) => {
+      console.log("found a key!", value);
+    }).then(() => {
+      AsyncStorage.removeItem("relateChatKey").then((value) => {
+        console.log("removed the key, but what is this value?", value);
+      })
+    })
+    // then try to get back to the login or splash screen
+    // this.props.navigator.replace({
+    //   title: "Relate",
+    //   component: Splash
+    // });
+    this.props.navigator.pop(); // used this instead of .replace because that doesn't reset the nav bar
+  }
+  // replaceRoute() {
+  //   this.props.navigator.replace({
+  //     title: "Relate",
+  //     component: Splash
+  //   })
+  // }
   componentWillMount() {
+    // interesting strategy for loading a splash screen, call timeout first, dont wait for results
+    setTimeout(
+      () => {
+        this.setState({ loaded: true })
+      },
+      2500,
+    );
+
     // Using this sequence just to make sure AsyncStorage is working and remove keys prior to having a logout button
     // AsyncStorage.getItem("relateChatKey").then((value) => {
     //   console.log("found a key!", value);
@@ -72,23 +97,21 @@ class RelateChat extends React.Component{
               .then((messagesData) => {
                 console.log("got the authedUser's messages:", messagesData);
                 this.setState({
-                  whichRoute: {title: `Chatting with ${user.relater.name}`, component: Chat, passProps: {user: user, messages: messagesData, uid: uid}},
+                  whichRoute: {
+                    title: `Chatting with ${user.relater.name}`,
+                    component: Chat,
+                    rightButtonTitle: 'Logout',
+                    onRightButtonPress: () => this.handleLogout(),
+                    passProps: {user: user, messages: messagesData, uid: uid, navigator: this.props.navigator}},
                   relateChatKey: value,
-                  loaded: true
+                  //loaded: true
                 })
-              })
+              });
           })
-        // this.setState({
-        //   whichRoute: {title: `Chatting with ${value.relater}`, component: Chat, passProps: {relateChatKey: value}},
-        //   relateChatKey: value,
-        //   loaded: true
-        // })
-        //whichRoute = {title: `Chatting with ${value.relater}`, component: Messages};
-        //this.setState({"relateChatKey": value});
+
       } else {
         console.log("making it past async storage because there is no authed user");
-        this.setState({ whichRoute: {title: 'Relate', component: Splash}, loaded: true })
-        //whichRoute = {title: 'Relate', component: Splash};
+        this.setState({ whichRoute: {title: 'Relate', component: Splash}, }) // took out loaded: true to let the setTimeout control the splash screen
       }
     }).done();
 

@@ -38,7 +38,7 @@ class Select extends React.Component{
             }
             this.props.navigator.push({
               component: Chat, // changing to Chat from Messages
-              title: `Chatting with ${myUser.relater}`, // changing to Chat from Messages
+              title: `Chatting with ${myUser.relater.name}`, // changing to Chat from Messages
               passProps: {
                 user: myUser,
                 messages: messagesData,

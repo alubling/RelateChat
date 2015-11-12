@@ -24,7 +24,7 @@ var base = Rebase.createClass('https://relate-chat.firebaseio.com/');
 class Chat extends React.Component{
   constructor(props){
     super(props);
-    var username = this.props.user.handle;
+    //var username = this.props.user.handle;
     this.ds = new ListView.DataSource({rowHasChanged: (row1, row2) => row1 !== row2});
     this.state = {
       newMessage: '',
@@ -98,23 +98,27 @@ class Chat extends React.Component{
     var name = this.props.user.name;
     var relater = this.props.user.relater;
     var timestamp = new Date();
+    var that = this;
     console.log("adding a message for: ", user, "which goes to:", relater);
 
     // api call to create a message, then get the new messages list
     api.addMessage(relater, user, message, timestamp, uid) // taking out username and changing to just name
       .then((key) => {
-        console.log("just added a message, this should be its key:", key);
+        //var justCreatedMessage = key;
+        console.log("just added a message, this should be its key:", key.name);
         console.log("just check the this context for getting messages again:", this);
-        base.fetch(`messages/${uid}`, { // changing this from username to uid
-              context: this,
+        return base.fetch(`messages/${uid}`, { // changing this from username to uid
+              context: that,
               asArray: true,
               then(data) {
-                this.setState({
-                  dataSource: this.ds.cloneWithRows(data)
+                console.log("made it into the fetch with data:", data);
+                //var newData = data.push(justCreatedMessage);
+                that.setState({
+                  dataSource: that.ds.cloneWithRows(data)
                 })
               }
             })
-      })
+      });
     // replace this base.post with api call so that it creates an id
 
     // base.post(`messages/${username}/`, {
@@ -205,7 +209,7 @@ class Chat extends React.Component{
 
 Chat.propTypes = {
   user: React.PropTypes.object.isRequired,
-  //messages: React.PropTypes.object.isRequired,
+  messages: React.PropTypes.object.isRequired,
   uid: React.PropTypes.string.isRequired
 }
 
@@ -242,11 +246,11 @@ Chat.propTypes = {
       borderWidth: 1,
       borderColor: 'white'
     },
-    backgroundImage: {
+    backgroundImage: { // really important: this is how you correctly get a fullscreen image to load
       flex: 1,
-      width: null,
+      width: null, // set width and height to null to override static size
       height: null,
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent' // set background transparent so you actually see the image
     },
     bgImageWrapper: {
       //flex: 1
