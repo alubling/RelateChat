@@ -17,7 +17,6 @@ var {
   StyleSheet,
   TextInput,
   AsyncStorage,
-  LayoutAnimation,
   TouchableHighlight,
   ActivityIndicatorIOS
 } = React;

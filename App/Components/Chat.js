@@ -104,15 +104,13 @@ class Chat extends React.Component{
     // api call to create a message, then get the new messages list
     api.addMessage(relater, user, message, timestamp, uid) // taking out username and changing to just name
       .then((key) => {
-        //var justCreatedMessage = key;
-        console.log("just added a message, this should be its key:", key.name);
+        console.log("just added a message, this should be its key:", key);
         console.log("just check the this context for getting messages again:", this);
         return base.fetch(`messages/${uid}`, { // changing this from username to uid
               context: that,
               asArray: true,
               then(data) {
                 console.log("made it into the fetch with data:", data);
-                //var newData = data.push(justCreatedMessage);
                 that.setState({
                   dataSource: that.ds.cloneWithRows(data)
                 })
@@ -181,16 +179,25 @@ class Chat extends React.Component{
         //</View>
     )
   }
+  senderMessage() {
+
+  }
+  receiverMessage() {
+
+  }
   renderRow(rowData) {
     console.log("this is the rowData: ", rowData);
     // Here we want to split the renderRow:
       // If the rowData.sender is the relater, render to the left
       // If the rowData.sender is the user, render to the right
     return (
+        // first take at just rendering the message text
         // <View style={styles.row}>
         //   <Text style={styles.messageText}>{rowData.text}</Text>
         // </View>
-        <View style={styles.row}>
+
+        // this works with message and avatar to the left and message bubble
+        <View style={styles.rowSender}>
           <View>
             <Image
               source={{uri: rowData.sender.avatar}} // this means there HAS to be an avatar
@@ -214,12 +221,21 @@ Chat.propTypes = {
 }
 
   var styles = StyleSheet.create({
-    row: {
+    rowSender: {
       flex: 1,
       flexDirection: 'row',
       padding: 10,
       alignItems: 'flex-end',
-      justifyContent: 'center'
+      justifyContent: 'flex-start'
+      //borderWidth: 1,
+      //borderColor: 'white'
+    },
+    rowReceiver: {
+      flex: 1,
+      flexDirection: 'row',
+      padding: 10,
+      alignItems: 'flex-end',
+      justifyContent: 'flex-end'
       //borderWidth: 1,
       //borderColor: 'white'
     },

@@ -58,6 +58,10 @@ class RelateChat extends React.Component{
     //   title: "Relate",
     //   component: Splash
     // });
+    console.log("trying to find the navigator:", this.props.navigator);
+    console.log("trying to find the navigator:", this.props);
+    console.log("trying to find the navigator:", this.navigator);
+
     this.props.navigator.pop(); // used this instead of .replace because that doesn't reset the nav bar
   }
   // replaceRoute() {
@@ -84,6 +88,8 @@ class RelateChat extends React.Component{
     //   })
     // })
 
+
+    var that = this;
     // This is the actual routing sequence, which checks if there is a key in local storage and if so takes the user directly to messages, if not takes them to splash page for signup or login
     AsyncStorage.getItem("relateChatKey").then((value) => {
       var uid = value;
@@ -95,14 +101,15 @@ class RelateChat extends React.Component{
             var user = userData;
             api.getMessages(uid)
               .then((messagesData) => {
+                console.log("this is:", this);
                 console.log("got the authedUser's messages:", messagesData);
-                this.setState({
+                that.setState({
                   whichRoute: {
                     title: `Chatting with ${user.relater.name}`,
                     component: Chat,
                     rightButtonTitle: 'Logout',
                     onRightButtonPress: () => this.handleLogout(),
-                    passProps: {user: user, messages: messagesData, uid: uid, navigator: this.props.navigator}},
+                    passProps: {user: user, messages: messagesData, uid: uid, navigator: that.props.navigator}},
                   relateChatKey: value,
                   //loaded: true
                 })
