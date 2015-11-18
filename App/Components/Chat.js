@@ -179,37 +179,75 @@ class Chat extends React.Component{
         //</View>
     )
   }
-  senderMessage() {
-
+  senderMessage(rowData) {
+    console.log("rowData should not be empty here:", rowData);
+    return (
+        // this works with message and avatar to the left and message bubble
+        <View style={styles.rowSender}>
+          <View>
+            <Image
+              source={{uri: rowData.rowData.sender.avatar}} // this means there HAS to be an avatar
+              style={styles.rowImage}
+              />
+          </View>
+          <View style={styles.messageBox}>
+            <Text style={styles.message}>
+              {rowData.rowData.text}
+            </Text>
+          </View>
+        </View>
+    )
   }
-  receiverMessage() {
-
+  receiverMessage(rowData) {
+    return (
+        // this works with message and avatar to the left and message bubble
+        <View style={styles.rowReceiver}>
+          <View style={styles.messageBox}>
+            <Text style={styles.message}>
+              {rowData.rowData.text}
+            </Text>
+          </View>
+          <View>
+            <Image
+              source={{uri: rowData.rowData.sender.avatar}} // this means there HAS to be an avatar
+              style={styles.rowImage}
+              />
+          </View>
+        </View>
+    )
   }
   renderRow(rowData) {
     console.log("this is the rowData: ", rowData);
+
     // Here we want to split the renderRow:
-      // If the rowData.sender is the relater, render to the left
-      // If the rowData.sender is the user, render to the right
+      if (rowData.sender.email === this.props.user.email) { // If the rowData.sender is the relater, render to the left
+        var rowRender = this.senderMessage;
+      } else { // If the rowData.sender is the user, render to the right
+        var rowRender = this.receiverMessage;
+      }
+
     return (
+        rowRender({rowData})
+
         // first take at just rendering the message text
         // <View style={styles.row}>
         //   <Text style={styles.messageText}>{rowData.text}</Text>
         // </View>
 
         // this works with message and avatar to the left and message bubble
-        <View style={styles.rowSender}>
-          <View>
-            <Image
-              source={{uri: rowData.sender.avatar}} // this means there HAS to be an avatar
-              style={styles.rowImage}
-              />
-          </View>
-          <View style={styles.messageBox}>
-            <Text style={styles.message}>
-              {rowData.text}
-            </Text>
-          </View>
-        </View>
+        // <View style={styles.rowSender}>
+        //   <View>
+        //     <Image
+        //       source={{uri: rowData.sender.avatar}} // this means there HAS to be an avatar
+        //       style={styles.rowImage}
+        //       />
+        //   </View>
+        //   <View style={styles.messageBox}>
+        //     <Text style={styles.message}>
+        //       {rowData.text}
+        //     </Text>
+        //   </View>
+        // </View>
     )
   }
 }
